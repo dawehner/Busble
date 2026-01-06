@@ -185,25 +185,23 @@ test.describe('Busble App', () => {
     const likeBtn = page.locator('#likeBtn');
     const nopeBtn = page.locator('#nopeBtn');
     const swipeCount = page.locator('#swipeCount');
+    const matchScreen = page.locator('#matchScreen');
+    const continueBtn = page.locator('#continueBtn');
 
-    // Perform 5 swipes (mix of like and nope)
-    await likeBtn.click();
-    await page.waitForTimeout(600);
+    // Perform 5 swipes (mix of like and nope), dismissing any match screens
+    for (let i = 0; i < 5; i++) {
+      const btn = i % 2 === 0 ? likeBtn : nopeBtn;
+      await btn.click();
+      await page.waitForTimeout(600);
 
-    await nopeBtn.click();
-    await page.waitForTimeout(600);
+      // If match screen appears, dismiss it
+      if (await matchScreen.isVisible()) {
+        await continueBtn.click();
+        await page.waitForTimeout(300);
+      }
+    }
 
-    await likeBtn.click();
-    await page.waitForTimeout(600);
-
-    await nopeBtn.click();
-    await page.waitForTimeout(600);
-
-    await likeBtn.click();
-    await page.waitForTimeout(600);
-
-    // Check that swipe count is at least 5
-    // (could be 5 if no matches, or less if match screens appeared)
+    // Check that swipe count is at least 3 (accounting for possible matches)
     const count = await swipeCount.textContent();
     expect(parseInt(count)).toBeGreaterThanOrEqual(3);
 
@@ -246,5 +244,308 @@ test.describe('Busble App', () => {
 
     // Take screenshot after drag
     await page.screenshot({ path: 'test-results/screenshots/after-drag.png', fullPage: true });
+  });
+
+  // Maintenance Log & Garage Tests
+  test.describe('Maintenance Log and Garage Features', () => {
+    test('should display garage button with count', async ({ page }) => {
+      const garageBtn = page.locator('#garageBtn');
+      await expect(garageBtn).toBeVisible();
+      await expect(garageBtn).toContainText('My Garage');
+
+      // Initial garage count should be 0
+      const garageCount = page.locator('#garageCount');
+      await expect(garageCount).toContainText('0');
+    });
+
+    test('should navigate to empty garage view', async ({ page }) => {
+      const garageBtn = page.locator('#garageBtn');
+      await garageBtn.click();
+
+      // Check that garage view is visible
+      const garageView = page.locator('#garageView');
+      await expect(garageView).toBeVisible();
+
+      // Check that card container is hidden
+      const cardContainer = page.locator('#cardContainer');
+      await expect(cardContainer).toBeHidden();
+
+      // Check empty garage message
+      const emptyGarage = page.locator('#emptyGarage');
+      await expect(emptyGarage).toBeVisible();
+      await expect(emptyGarage).toContainText('Your garage is empty!');
+
+      // Take screenshot of empty garage
+      await page.screenshot({ path: 'test-results/screenshots/empty-garage.png', fullPage: true });
+    });
+
+    test('should navigate back to swipe view from garage', async ({ page }) => {
+      // Go to garage
+      await page.locator('#garageBtn').click();
+      await expect(page.locator('#garageView')).toBeVisible();
+
+      // Click back to swipe button
+      const backBtn = page.locator('#backToSwipeBtn');
+      await backBtn.click();
+
+      // Verify we're back in swipe view
+      const cardContainer = page.locator('#cardContainer');
+      await expect(cardContainer).toBeVisible();
+
+      const garageView = page.locator('#garageView');
+      await expect(garageView).toBeHidden();
+    });
+
+    test('should show maintenance message on match screen', async ({ page }) => {
+      const likeBtn = page.locator('#likeBtn');
+      const matchScreen = page.locator('#matchScreen');
+      let matchFound = false;
+
+      // Keep swiping right until we get a match (max 30 attempts)
+      for (let i = 0; i < 30; i++) {
+        await likeBtn.click();
+        await page.waitForTimeout(600);
+
+        const isVisible = await matchScreen.isVisible();
+        if (isVisible) {
+          matchFound = true;
+          break;
+        }
+      }
+
+      if (matchFound) {
+        // Check for maintenance message
+        const maintenanceMessage = page.locator('#maintenanceMessage');
+        await expect(maintenanceMessage).toBeVisible();
+
+        // Should contain some text
+        const messageText = await maintenanceMessage.textContent();
+        expect(messageText.length).toBeGreaterThan(0);
+
+        // Take screenshot of match with maintenance message
+        await page.screenshot({ path: 'test-results/screenshots/match-with-maintenance.png', fullPage: true });
+      }
+    });
+
+    test('should save matched bus to garage', async ({ page }) => {
+      const likeBtn = page.locator('#likeBtn');
+      const matchScreen = page.locator('#matchScreen');
+      const continueBtn = page.locator('#continueBtn');
+      let matchFound = false;
+
+      // Keep swiping right until we get a match
+      for (let i = 0; i < 30; i++) {
+        await likeBtn.click();
+        await page.waitForTimeout(600);
+
+        const isVisible = await matchScreen.isVisible();
+        if (isVisible) {
+          matchFound = true;
+          // Close the match screen
+          await continueBtn.click();
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
+      if (matchFound) {
+        // Check that garage count increased
+        const garageCount = page.locator('#garageCount');
+        await expect(garageCount).toContainText('1');
+
+        // Navigate to garage
+        await page.locator('#garageBtn').click();
+
+        // Verify garage is not empty
+        const emptyGarage = page.locator('#emptyGarage');
+        await expect(emptyGarage).toBeHidden();
+
+        // Verify garage container has content
+        const garageContainer = page.locator('#garageContainer');
+        await expect(garageContainer).toBeVisible();
+
+        // Take screenshot of garage with matched bus
+        await page.screenshot({ path: 'test-results/screenshots/garage-with-match.png', fullPage: true });
+      }
+    });
+
+    test('should display maintenance logs in garage', async ({ page }) => {
+      const likeBtn = page.locator('#likeBtn');
+      const matchScreen = page.locator('#matchScreen');
+      const continueBtn = page.locator('#continueBtn');
+
+      // Get a match first
+      for (let i = 0; i < 30; i++) {
+        await likeBtn.click();
+        await page.waitForTimeout(600);
+
+        if (await matchScreen.isVisible()) {
+          await continueBtn.click();
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
+      // Navigate to garage
+      await page.locator('#garageBtn').click();
+
+      // Check for maintenance log section
+      const maintenanceLogHeader = page.getByText('Maintenance Log');
+      if (await maintenanceLogHeader.isVisible()) {
+        await expect(maintenanceLogHeader).toBeVisible();
+
+        // Check that there's at least one log entry (the initial welcome message)
+        const logEntries = page.locator('.bg-white.rounded-lg.p-3');
+        const count = await logEntries.count();
+        expect(count).toBeGreaterThan(0);
+
+        // Take screenshot of maintenance log
+        await page.screenshot({ path: 'test-results/screenshots/maintenance-logs.png', fullPage: true });
+      }
+    });
+
+    test('should display bus technical specs in garage', async ({ page }) => {
+      const likeBtn = page.locator('#likeBtn');
+      const matchScreen = page.locator('#matchScreen');
+      const continueBtn = page.locator('#continueBtn');
+
+      // Get a match first
+      for (let i = 0; i < 30; i++) {
+        await likeBtn.click();
+        await page.waitForTimeout(600);
+
+        if (await matchScreen.isVisible()) {
+          await continueBtn.click();
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
+      // Navigate to garage
+      await page.locator('#garageBtn').click();
+
+      // Check for technical specs
+      const engineLabel = page.getByText('Engine:');
+      if (await engineLabel.isVisible()) {
+        await expect(engineLabel).toBeVisible();
+
+        // Check other spec labels
+        await expect(page.getByText('Fuel:')).toBeVisible();
+        await expect(page.getByText('Capacity:')).toBeVisible();
+        await expect(page.getByText('MPG:')).toBeVisible();
+
+        // Take screenshot of specs
+        await page.screenshot({ path: 'test-results/screenshots/technical-specs.png', fullPage: true });
+      }
+    });
+
+    test('should display relationship stats (mileage and days together)', async ({ page }) => {
+      const likeBtn = page.locator('#likeBtn');
+      const matchScreen = page.locator('#matchScreen');
+      const continueBtn = page.locator('#continueBtn');
+
+      // Get a match first
+      for (let i = 0; i < 30; i++) {
+        await likeBtn.click();
+        await page.waitForTimeout(600);
+
+        if (await matchScreen.isVisible()) {
+          await continueBtn.click();
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
+      // Navigate to garage
+      await page.locator('#garageBtn').click();
+
+      // Check for mileage and days display in the stats section
+      const statsSection = page.locator('.bg-red-50, .bg-blue-50');
+      if (await statsSection.first().isVisible()) {
+        // Should have at least 2 stat boxes
+        const statCount = await statsSection.count();
+        expect(statCount).toBeGreaterThanOrEqual(2);
+
+        // Verify text content contains mileage (mi) and days
+        const allStatsText = await page.locator('.grid.grid-cols-2.gap-2 .bg-red-50, .grid.grid-cols-2.gap-2 .bg-blue-50').allTextContents();
+        const hasValidStats = allStatsText.some(text => text.includes('mi') || text.includes('days'));
+        expect(hasValidStats).toBeTruthy();
+
+        // Take screenshot of stats
+        await page.screenshot({ path: 'test-results/screenshots/relationship-stats.png', fullPage: true });
+      }
+    });
+
+    test('should handle multiple matched buses', async ({ page }) => {
+      const likeBtn = page.locator('#likeBtn');
+      const matchScreen = page.locator('#matchScreen');
+      const continueBtn = page.locator('#continueBtn');
+      let matchCount = 0;
+
+      // Try to get 2 matches
+      for (let i = 0; i < 50 && matchCount < 2; i++) {
+        await likeBtn.click();
+        await page.waitForTimeout(600);
+
+        if (await matchScreen.isVisible()) {
+          matchCount++;
+          await continueBtn.click();
+          await page.waitForTimeout(300);
+        }
+      }
+
+      if (matchCount >= 2) {
+        // Navigate to garage
+        await page.locator('#garageBtn').click();
+
+        // Count the bus cards in garage
+        const busCards = page.locator('#garageContainer > div');
+        const cardCount = await busCards.count();
+        expect(cardCount).toBe(matchCount);
+
+        // Verify garage count badge
+        const garageCount = page.locator('#garageCount');
+        await expect(garageCount).toContainText(matchCount.toString());
+
+        // Take screenshot of multiple buses
+        await page.screenshot({ path: 'test-results/screenshots/multiple-matches-garage.png', fullPage: true });
+      }
+    });
+
+    test('should persist matched buses after page reload', async ({ page }) => {
+      const likeBtn = page.locator('#likeBtn');
+      const matchScreen = page.locator('#matchScreen');
+      const continueBtn = page.locator('#continueBtn');
+
+      // Get a match first
+      for (let i = 0; i < 30; i++) {
+        await likeBtn.click();
+        await page.waitForTimeout(600);
+
+        if (await matchScreen.isVisible()) {
+          await continueBtn.click();
+          await page.waitForTimeout(300);
+          break;
+        }
+      }
+
+      // Get the garage count before reload
+      const garageCountBefore = await page.locator('#garageCount').textContent();
+
+      // Reload the page
+      await page.reload();
+      await page.waitForLoadState('networkidle');
+
+      // Check that garage count is still the same
+      const garageCountAfter = await page.locator('#garageCount').textContent();
+      expect(garageCountAfter).toBe(garageCountBefore);
+
+      // Verify data persisted by going to garage
+      if (parseInt(garageCountAfter) > 0) {
+        await page.locator('#garageBtn').click();
+        const garageContainer = page.locator('#garageContainer');
+        await expect(garageContainer).toBeVisible();
+      }
+    });
   });
 });

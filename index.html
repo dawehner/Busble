@@ -129,6 +129,30 @@
         h1, h2 {
             font-family: 'Hammersmith One', sans-serif;
         }
+
+        /* Custom scrollbar for garage */
+        #garageContainer::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #garageContainer::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        #garageContainer::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        #garageContainer::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Ensure hidden class works properly */
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-tfl-red via-london-red to-tfl-navy min-h-screen flex items-center justify-center p-4">
@@ -140,6 +164,11 @@
         <div class="text-center mb-6">
             <h1 class="text-6xl font-johnston font-bold text-white mb-2">🚌 Busble</h1>
             <p class="text-white text-lg font-body">Find your perfect bus match!</p>
+            <div class="mt-4">
+                <button id="garageBtn" class="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-johnston px-6 py-2 rounded-full transition-all transform hover:scale-105">
+                    🔧 My Garage (<span id="garageCount">0</span>)
+                </button>
+            </div>
         </div>
 
         <!-- Card Container -->
@@ -180,17 +209,44 @@
             </div>
 
             <!-- Match Screen (Hidden initially) -->
-            <div id="matchScreen" class="hidden absolute inset-0 bg-gradient-to-br from-tfl-red to-tfl-blue rounded-3xl flex flex-col items-center justify-center p-8">
+            <div id="matchScreen" class="hidden absolute inset-0 bg-gradient-to-br from-tfl-red to-tfl-blue rounded-3xl flex flex-col items-center justify-center p-8 overflow-y-auto">
                 <div class="bussel-animation text-center">
                     <div class="text-8xl mb-6">🚌💕🚌</div>
                     <h2 class="text-6xl font-johnston font-bold text-white mb-4">YOU BUSSEL!!</h2>
-                    <p class="text-2xl text-white mb-8 font-body">It's a match made in transit heaven!</p>
-                    <button id="continueBtn" class="bg-white text-tfl-red font-bold text-xl px-8 py-4 rounded-full hover:bg-gray-100 transition-all transform hover:scale-105 font-johnston">
+                    <p class="text-2xl text-white mb-4 font-body">It's a match made in transit heaven!</p>
+
+                    <!-- Maintenance Message -->
+                    <div id="maintenanceMessage"></div>
+
+                    <button id="continueBtn" class="bg-white text-tfl-red font-bold text-xl px-8 py-4 rounded-full hover:bg-gray-100 transition-all transform hover:scale-105 font-johnston mt-8">
                         Keep Swiping
                     </button>
                 </div>
             </div>
 
+        </div>
+
+        <!-- Garage View (Hidden initially) -->
+        <div id="garageView" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-johnston font-bold text-white">Your Bus Collection</h2>
+                <button id="backToSwipeBtn" class="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-johnston px-4 py-2 rounded-full transition-all">
+                    ← Back to Swiping
+                </button>
+            </div>
+
+            <div id="garageContainer" class="space-y-4 max-h-[700px] overflow-y-auto pr-2">
+                <!-- Garage cards will be inserted here -->
+            </div>
+
+            <div id="emptyGarage" class="text-center p-12 bg-white/10 backdrop-blur-sm rounded-3xl">
+                <div class="text-6xl mb-4">🚌💔</div>
+                <h3 class="text-2xl font-johnston text-white mb-2">Your garage is empty!</h3>
+                <p class="text-white font-body mb-6">Start swiping to find your perfect bus matches!</p>
+                <button id="startSwipingBtn" class="bg-white text-tfl-red font-bold text-xl px-8 py-4 rounded-full hover:bg-gray-100 transition-all transform hover:scale-105 font-johnston">
+                    Start Swiping
+                </button>
+            </div>
         </div>
 
         <!-- Stats -->
