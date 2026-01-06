@@ -1,0 +1,18 @@
+{
+  "name": "busble",
+  "version": "1.0.0",
+  "description": "Find your perfect bus match! Swipe through a curated selection of buses and discover your transit soulmate.",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report"
+  },
+  "keywords": ["bus", "dating", "app", "swipe"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "http-server": "^14.1.1"
+  }
+}
