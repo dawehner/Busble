@@ -29,6 +29,15 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Remove CNAME file to prevent custom domain
+        run: |
+          if [ -f CNAME ]; then
+            rm CNAME
+            echo "Removed CNAME file to prevent custom domain usage"
+          else
+            echo "No CNAME file found"
+          fi
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
