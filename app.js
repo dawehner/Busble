@@ -127,7 +127,7 @@ function loadBus(index) {
     busTags.innerHTML = '';
     bus.tags.forEach(tag => {
         const tagEl = document.createElement('span');
-        tagEl.className = 'bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium';
+        tagEl.className = 'bg-red-100 text-tfl-red px-3 py-1 rounded-full text-sm font-medium';
         tagEl.textContent = tag;
         busTags.appendChild(tagEl);
     });
@@ -180,7 +180,7 @@ function hideMatchScreen() {
 
 // Create confetti effect
 function createConfetti() {
-    const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'];
+    const colors = ['#DC241F', '#CC3333', '#0019A8', '#1C3F94', '#FFFFFF', '#FFD700'];
     const confettiCount = 50;
 
     for (let i = 0; i < confettiCount; i++) {
