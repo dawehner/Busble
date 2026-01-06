@@ -168,12 +168,16 @@ function handleSwipe(direction) {
 // Show match screen with animation
 function showMatchScreen() {
     matchScreen.classList.remove('hidden');
+    matchScreen.classList.add('flex', 'flex-col', 'items-center', 'justify-center');
+    matchScreen.style.display = 'flex';
     createConfetti();
 }
 
 // Hide match screen and continue
 function hideMatchScreen() {
     matchScreen.classList.add('hidden');
+    matchScreen.classList.remove('flex', 'flex-col', 'items-center', 'justify-center');
+    matchScreen.style.display = 'none';
     currentBusIndex++;
     loadBus(currentBusIndex);
 }
