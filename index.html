@@ -66,6 +66,139 @@
             }
         }
 
+        /* Super Extra Heart Animations */
+        @keyframes loveExplosion {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.3) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            10%, 30% {
+                transform: scale(1.3);
+            }
+            20%, 40% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg) brightness(1.2); }
+            25% { filter: hue-rotate(90deg) brightness(1.4); }
+            50% { filter: hue-rotate(180deg) brightness(1.2); }
+            75% { filter: hue-rotate(270deg) brightness(1.4); }
+            100% { filter: hue-rotate(360deg) brightness(1.2); }
+        }
+
+        @keyframes textGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px #DC241F, 0 0 20px #DC241F, 0 0 30px #DC241F, 0 0 40px #ff69b4;
+                transform: scale(1);
+            }
+            50% {
+                text-shadow: 0 0 20px #DC241F, 0 0 40px #DC241F, 0 0 60px #ff1493, 0 0 80px #ff69b4;
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5) rotate(180deg);
+            }
+        }
+
+        @keyframes spinHeart {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.5);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+
+        #loveOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #DC241F 0%, #ff69b4 50%, #ff1493 100%);
+            z-index: 9999;
+            display: none;
+            animation: rainbow 3s infinite;
+        }
+
+        #loveOverlay.active {
+            display: flex;
+        }
+
+        .love-message {
+            animation: loveExplosion 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .love-text {
+            animation: textGlow 1.5s ease-in-out infinite, heartBeat 1.5s ease-in-out infinite;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 3rem;
+            animation: floatHeart 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .spinning-heart {
+            position: absolute;
+            font-size: 4rem;
+            animation: spinHeart 2s linear infinite;
+        }
+
+        .sparkle-element {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
         .swipe-left {
             animation: slideLeft 0.5s ease-out forwards;
         }
@@ -201,6 +334,26 @@
             </p>
         </div>
 
+    </div>
+
+    <!-- Love Overlay (Hidden initially) -->
+    <div id="loveOverlay" class="items-center justify-center">
+        <div class="love-message text-center relative">
+            <div class="text-9xl mb-8">
+                💕💖💗💓💝
+            </div>
+            <h1 class="love-text text-7xl md:text-8xl font-johnston font-bold text-white mb-6 px-4">
+                MJ I love you!!!
+            </h1>
+            <div class="text-9xl mb-8 flex gap-4 justify-center">
+                <span class="spinning-heart">❤️</span>
+                <span class="spinning-heart" style="animation-delay: 0.3s;">💖</span>
+                <span class="spinning-heart" style="animation-delay: 0.6s;">💕</span>
+            </div>
+            <button id="closeLoveBtn" class="bg-white text-tfl-red font-bold text-2xl px-12 py-6 rounded-full hover:bg-gray-100 transition-all transform hover:scale-110 font-johnston shadow-2xl">
+                Continue Swiping 😍
+            </button>
+        </div>
     </div>
 
     <script src="app.js"></script>
