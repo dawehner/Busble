@@ -94,6 +94,8 @@ const swipeCountEl = document.getElementById('swipeCount');
 const matchCountEl = document.getElementById('matchCount');
 const likeOverlay = document.getElementById('likeOverlay');
 const nopeOverlay = document.getElementById('nopeOverlay');
+const loveOverlay = document.getElementById('loveOverlay');
+const closeLoveBtn = document.getElementById('closeLoveBtn');
 
 // Initialize app
 function init() {
@@ -148,6 +150,14 @@ function handleSwipe(direction) {
     swipeCount++;
     swipeCountEl.textContent = swipeCount;
 
+    // Check for 6 swipes - show love animation!
+    if (swipeCount === 6) {
+        setTimeout(() => {
+            showLoveAnimation();
+        }, 500);
+        return;
+    }
+
     // Check for match (1 in 4 chance on likes)
     const isMatch = isLike && Math.random() < 0.25;
 
@@ -198,12 +208,71 @@ function createConfetti() {
     }
 }
 
+// Show love animation after 6 swipes
+function showLoveAnimation() {
+    loveOverlay.classList.add('active');
+    createFloatingHearts();
+    createSparkles();
+}
+
+// Hide love animation
+function hideLoveAnimation() {
+    loveOverlay.classList.remove('active');
+    // Clean up floating hearts and sparkles
+    const floatingHearts = loveOverlay.querySelectorAll('.floating-heart');
+    const sparkles = loveOverlay.querySelectorAll('.sparkle-element');
+    floatingHearts.forEach(heart => heart.remove());
+    sparkles.forEach(sparkle => sparkle.remove());
+    // Load next bus
+    currentBusIndex++;
+    loadBus(currentBusIndex);
+}
+
+// Create floating hearts effect
+function createFloatingHearts() {
+    const hearts = ['❤️', '💕', '💖', '💗', '💓', '💝', '💘', '💞'];
+    const heartCount = 30;
+
+    for (let i = 0; i < heartCount; i++) {
+        setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            loveOverlay.appendChild(heart);
+
+            setTimeout(() => heart.remove(), 8000);
+        }, i * 100);
+    }
+}
+
+// Create sparkle effect
+function createSparkles() {
+    const sparkleCount = 40;
+
+    for (let i = 0; i < sparkleCount; i++) {
+        setTimeout(() => {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle-element';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = Math.random() * 1 + 's';
+            loveOverlay.appendChild(sparkle);
+
+            setTimeout(() => sparkle.remove(), 6000);
+        }, i * 80);
+    }
+}
+
 // Touch and mouse events for swiping
 function attachEventListeners() {
     // Button clicks
     likeBtn.addEventListener('click', () => handleSwipe('right'));
     nopeBtn.addEventListener('click', () => handleSwipe('left'));
     continueBtn.addEventListener('click', hideMatchScreen);
+    closeLoveBtn.addEventListener('click', hideLoveAnimation);
 
     // Mouse events
     busCard.addEventListener('mousedown', dragStart);
