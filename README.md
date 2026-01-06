@@ -14,10 +14,32 @@ Find your perfect bus match! Swipe through a curated selection of buses and disc
 
 ## How to Use
 
+### Local Development
 1. Open `index.html` in your web browser
 2. Swipe right (like) or left (nope) on buses
 3. When you match, celebrate your "BUSSEL!!" moment
 4. Keep swiping to find more bus matches!
+
+### Deploy to GitHub Pages
+
+This project includes automatic deployment to GitHub Pages. To set it up:
+
+1. **Enable GitHub Pages in your repository**:
+   - Go to your repository on GitHub
+   - Navigate to **Settings** → **Pages**
+   - Under "Build and deployment":
+     - **Source**: Select "GitHub Actions"
+
+2. **Push to main/master branch**:
+   - The GitHub Actions workflow will automatically deploy your site
+   - Your site will be available at: `https://[username].github.io/[repository-name]/`
+
+3. **Manual deployment** (optional):
+   - Go to the **Actions** tab in your repository
+   - Click on "Deploy to GitHub Pages"
+   - Click "Run workflow" to manually trigger a deployment
+
+The deployment workflow is configured in `.github/workflows/deploy.yml` and will run automatically whenever you push to the main or master branch.
 
 ## Controls
 
