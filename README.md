@@ -20,9 +20,39 @@ Find your perfect bus match! Swipe through a curated selection of buses and disc
 3. When you match, celebrate your "BUSSEL!!" moment
 4. Keep swiping to find more bus matches!
 
+### Deploy to Netlify
+
+The easiest way to deploy Busble is with Netlify:
+
+1. **Deploy via Netlify CLI**:
+   ```bash
+   # Install Netlify CLI globally
+   npm install -g netlify-cli
+
+   # Deploy to Netlify
+   netlify deploy
+
+   # For production deployment
+   netlify deploy --prod
+   ```
+
+2. **Deploy via Netlify Dashboard**:
+   - Go to [Netlify](https://www.netlify.com/)
+   - Click "Add new site" → "Import an existing project"
+   - Connect your GitHub repository
+   - Netlify will automatically detect the `netlify.toml` configuration
+   - Click "Deploy site"
+
+3. **Deploy via drag-and-drop**:
+   - Go to [Netlify Drop](https://app.netlify.com/drop)
+   - Drag and drop your project folder
+   - Your site will be live instantly!
+
+The Netlify configuration is in `netlify.toml` and includes security headers and proper routing.
+
 ### Deploy to GitHub Pages
 
-This project includes automatic deployment to GitHub Pages. To set it up:
+This project also includes automatic deployment to GitHub Pages. To set it up:
 
 1. **Enable GitHub Pages in your repository**:
    - Go to your repository on GitHub
